@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Advanced Mouse Maze Game</title>
+    <style>
+        .game-container {
+            width: 400px;
+            height: 400px;
+            position: relative;
+            background: #111;
+            margin: 20px auto;
+            border: 2px solid #333;
+        }
+
+        .wall {
+            position: absolute;
+            background: #2121ff;
+        }
+
+        .dot {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: #ffb897;
+            border-radius: 50%;
+            transition: opacity 0.2s;
+        }
+
+        .score {
+            text-align: center;
+            font-family: Arial, sans-serif;
+            font-size: 24px;
+            margin: 10px;
+            color: #2121ff;
+            font-weight: bold;
+        }
+
+        .start-area {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: #90EE90;
+            opacity: 0.5;
+        }
+
+        .end-area {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: #FF6B6B;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="score">Score: <span id="score">0</span></div>
+    <div class="game-container" id="maze"></div>
+
+    <script>
+        class MazeGame {
+            constructor(width, height) {
+                this.width = width;
+                this.height = height;
+                this.maze = document.getElementById('maze');
+                this.score = 0;
+                this.scoreElement = document.getElementById('score');
+                this.walls = [];
+                this.dots = [];
+                this.collectedDots = new Set();
+                
+                this.generateMaze();
+                this.addDots();
+                this.addStartEndAreas();
+                this.setupEventListeners();
+            }
+
+            generateMaze() {
+                const wallThickness = 15;
+                
+                // Outer walls
+                this.createWall(0, 0, this.width, wallThickness);
+                this.createWall(0, 0, wallThickness, this.height);
+                this.createWall(0, this.height - wallThickness, this.width, wallThickness);
+                this.createWall(this.width - wallThickness, 0, wallThickness, this.height);
+
+                // Maze walls (complex structure)
+                const innerWalls = [
+                    {x: 50, y: 50, w: 300, h: wallThickness},
+                    {x: 50, y: 100, w: wallThickness, h: 200},
+                    {x: 100, y: 200, w: 200, h: wallThickness},
+                    {x: 250, y: 100, w: wallThickness, h: 150},
+                    {x: 150, y: 50, w: wallThickness, h: 100},
+                    {x: 50, y: 300, w: 250, h: wallThickness},
+                    {x: 300, y: 200, w: wallThickness, h: 100},
+                    {x: 200, y: 250, w: wallThickness, h: 100}
+                ];
+
+                innerWalls.forEach(wall => {
+                    this.createWall(wall.x, wall.y, wall.w, wall.h);
+                });
+            }
+
+            createWall(x, y, width, height) {
+                const wall = document.createElement('div');
+                wall.className = 'wall';
+                wall.style.left = x + 'px';
+                wall.style.top = y + 'px';
+                wall.style.width = width + 'px';
+                wall.style.height = height + 'px';
+                this.maze.appendChild(wall);
+                this.walls.push(wall);
+            }
+
+            addDots() {
+                for (let i = 60; i < 350; i += 50) {
+                    const dot = document.createElement('div');
+                    dot.className = 'dot';
+                    dot.style.left = (i - 3) + 'px';
+                    dot.style.top = (i % 2 === 0 ? 80 : 220) + 'px';
+                    this.maze.appendChild(dot);
+                    this.dots.push(dot);
+                }
+            }
+
+            addStartEndAreas() {
+                const start = document.createElement('div');
+                start.className = 'start-area';
+                start.style.left = '15px';
+                start.style.top = '15px';
+                this.maze.appendChild(start);
+
+                const end = document.createElement('div');
+                end.className = 'end-area';
+                end.style.left = '355px';
+                end.style.top = '355px';
+                this.maze.appendChild(end);
+            }
+
+            resetGame() {
+                this.score = 0;
+                this.scoreElement.textContent = this.score;
+                this.collectedDots.clear();
+                this.dots.forEach((dot) => {
+                    dot.style.opacity = '1';
+                });
+            }
+
+            checkWallCollision(x, y) {
+                const buffer = 3;
+                return this.walls.some(wall => {
+                    const wallRect = wall.getBoundingClientRect();
+                    const mazeRect = this.maze.getBoundingClientRect();
+                    const wallX = wallRect.left - mazeRect.left;
+                    const wallY = wallRect.top - mazeRect.top;
+                    
+                    return x >= wallX - buffer && 
+                           x <= wallX + wall.offsetWidth + buffer && 
+                           y >= wallY - buffer && 
+                           y <= wallY + wall.offsetHeight + buffer;
+                });
+            }
+
+            setupEventListeners() {
+                this.maze.addEventListener('mousemove', (e) => {
+                    const rect = this.maze.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+
+                    if (this.checkWallCollision(x, y)) {
+                        this.resetGame();
+                        return;
+                    }
+                });
+
+                this.maze.addEventListener('mouseleave', () => {
+                    this.resetGame();
+                });
+            }
+        }
+
+        window.addEventListener('load', () => {
+            new MazeGame(400, 400);
+        });
+    </script>
+</body>
+</html>

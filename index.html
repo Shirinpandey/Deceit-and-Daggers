@@ -1,17 +1,101 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>deceitful-daggers-display</title>
-    <meta name="description" content="Lovable Generated Project" />
-    <meta name="author" content="Lovable" />
-    <meta property="og:image" content="/og-image.png" />
-  </head>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hand Direction Game</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
 
-  <body>
-    <div id="root"></div>
-    <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        .game-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 100px;
+        }
+
+        #dagger, #hand {
+            width: 180px;
+            height: auto;
+            transition: transform 0.3s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+    <h1>Rotate the dagger to match the hand</h1>
+    <p id="round-info">Round: 1 / 5</p>
+    <div class="game-container">
+        <img id="hand" src="hand.png" alt="Hand Direction" />
+        <img id="dagger" src="dagger.png" alt="Rotate Me" />
+    </div>
+    <p id="status-message"></p>
+
+    <script>
+        const dagger = document.getElementById('dagger');
+        const hand = document.getElementById('hand');
+        const roundInfo = document.getElementById('round-info');
+        const statusMessage = document.getElementById('status-message');
+
+        const allowedAngles = [0, 45, 90, 135, 180, 225, 270, 315];
+
+        const daggerOffset = 90; 
+        const handOffset = 0; 
+
+        let roundCount = 1;
+        const maxRounds = 5;
+
+        function setRandomHandDirection() {
+            return allowedAngles[Math.floor(Math.random() * allowedAngles.length)];
+        }
+
+        function updateHandDirection() {
+            hand.style.transform = `rotate(${correctHandDirection}deg)`;
+        }
+
+        function rotateDagger() {
+            let currentAngle = parseInt(dagger.getAttribute("data-angle")) || 0;
+            let newAngle = (currentAngle + 45) % 360; 
+
+            dagger.style.transform = `rotate(${newAngle}deg)`;
+            dagger.setAttribute("data-angle", newAngle);
+
+            let adjustedDaggerAngle = (newAngle + daggerOffset) % 360;
+            let adjustedHandAngle = (correctHandDirection + handOffset) % 360;
+
+            if (adjustedDaggerAngle === adjustedHandAngle) {
+                setTimeout(() => {
+                    if (roundCount < maxRounds) {
+                        roundCount++;
+                        roundInfo.innerText = `Round: ${roundCount} / ${maxRounds}`;
+                        correctHandDirection = setRandomHandDirection();
+                        updateHandDirection();
+                        statusMessage.innerText = "Correct! Next round...";
+                    } else {
+                        statusMessage.innerText = "Game Over! You completed all 5 rounds!";
+                        dagger.removeEventListener("click", rotateDagger);
+                    }
+                }, 300);
+            }
+        }
+
+        let correctHandDirection = setRandomHandDirection();
+        updateHandDirection();
+
+        dagger.addEventListener("click", rotateDagger);
+    </script>
+</body>
 </html>
