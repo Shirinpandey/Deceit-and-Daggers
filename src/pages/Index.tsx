@@ -1,7 +1,8 @@
-import GameMainScreen from "@/components/GameMainScreen";
+
+import MainMenu from "../components/MainMenu";
 
 const Index = () => {
-  return <GameMainScreen />;
+  return <MainMenu />;
 };
 
 export default Index;
