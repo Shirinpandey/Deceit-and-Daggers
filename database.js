@@ -1,4 +1,6 @@
-const mongoose = require("mongoose");
+// const mongoose = require("mongoose");
+import mongoose from "mongoose"; 
+
 
 // Connect to MongoDB
 const connectDB = async () => {
@@ -14,15 +16,17 @@ const connectDB = async () => {
   }
 };
 
-// Players Schema
-const PlayerSchema = new mongoose.Schema({
+
+// Characters Schema
+const CharacterSchema = new mongoose.Schema({
   gameKey: String,  // Links players to a game
   name: String,
   role: { type: String, enum: ["Civilian", "Medic", "Mafia"], required: true },
   isAlive: { type: Boolean, default: true },
 });
 
-const Player = mongoose.model("Player", PlayerSchema);
+const Character = mongoose.model("Character", CharacterSchema);
+
 
 // Scores Schema
 const ScoreSchema = new mongoose.Schema({
@@ -35,6 +39,7 @@ const ScoreSchema = new mongoose.Schema({
 
 const Score = mongoose.model("Score", ScoreSchema);
 
+
 // Games Schema
 const GameSchema = new mongoose.Schema({
   gameKey: { type: String, unique: true, required: true },
@@ -44,4 +49,6 @@ const GameSchema = new mongoose.Schema({
 
 const Game = mongoose.model("Game", GameSchema);
 
-module.exports = { connectDB, Player, Score, Game };
+
+// module.exports = { connectDB, Player, Score, Game };
+export { connectDB, Character, Score, Game };

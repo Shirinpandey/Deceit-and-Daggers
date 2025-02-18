@@ -1,22 +1,26 @@
-function allocateRoles(names) {
-    let num = names.length 
-    let role_list = []
-    let already_assigned = 0
-    role_list.push("medic");
-    if (num <7) {
-        role_list.push("killer");
+// const {Character} = require('database.js'); // Import the Character Schema
+import { Character } from './database.js';
+
+async function allocateRoles(names, gameKey) {
+    let numPlayers = names.length;
+    let role_list = [];
+    let already_assigned = 0;
+    let civilian_no = 0;
+    role_list.push("Medic");
+    if (numPlayers <7) {
+        role_list.push("Mafia");
         already_assigned = 2;
     } else {
-        role_list.push("killer");
-        role_list.push("killer");
+        role_list.push("Mafia");
+        role_list.push("Mafia");
         already_assigned = 3;
     }
     
-    civillian_no = num-already_assigned;
+    civilian_no = numPlayers-already_assigned;
     let assignedRoles = []
     
-    for (let i = 0; i < (civillian_no); i++) {
-        role_list.push("civillian");
+    for (let i = 0; i < (civilian_no); i++) {
+        role_list.push("Civilian");
     }
     for (let i = 0; i < (role_list.length); i++) {
         let random_index = Math.floor(Math.random()* role_list.length);
@@ -24,17 +28,26 @@ function allocateRoles(names) {
         role_list.splice(random_index, 1);
     }
 
-    roles_name_list = [];
-    
-    for (let i = 0; i < (names.length); i++) {
-        roles_name_list.push({name: names[i], role: assignedRoles[i]})
-    }
-    console.log(roles_name_list);
-    return roles_name_list;
-}
+    // Create player objects with roles
+    const players = names.map((name, index) => ({
+        gameKey,
+        name,
+        role: assignedRoles[index],
+        isAlive: true
+    }));
 
-function main(){
-    assignedRoles = allocateRoles(['maya', 'sally', 'jason', 'poppy', 'juju', 'sky'])
-}
+    try {
+        const roles = await Character.find(); // Fetch all roles from the database
+        console.log("Roles fetched from MongoDB:", roles);
+     
+     
+         // Save the new character to MongoDB
+         await Character.insertMany(players)
+     
+     
+      } catch (error) {
+        console.error("Error fetching roles:", error);
+      }
+     }
 
-main();
+     allocateRoles(['Sky', 'Arjun', 'Rhea', 'Shirin', 'Bob'], "gamekeyexample8");
