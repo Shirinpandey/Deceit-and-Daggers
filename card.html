@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            text-align: center;
+            font-family: Arial, sans-serif;
+        }
+
+        .drop-zone {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            padding: 20px;
+            background: #f5f5f5;
+            border-radius: 10px;
+            min-height: 200px;
+        }
+
+        .card {
+            width: 120px;
+            height: 160px;
+            background: white;
+            border: 3px solid #333;
+            border-radius: 10px;
+            cursor: move;
+            transition: transform 0.2s;
+            position: relative;
+            padding: 10px;
+        }
+
+        .card[draggable="true"]:hover {
+            transform: scale(1.05);
+        }
+
+        .card.dragging {
+            opacity: 0.5;
+            background: #eee;
+        }
+
+        .hearts, .diamonds {
+            color: red;
+        }
+
+        .spades, .clubs {
+            color: black;
+        }
+
+        .drop-target {
+            border: 3px dashed #666;
+        }
+
+        .message {
+            margin: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 1.2em;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            opacity: 1;
+        }
+
+        .card-corner {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 1.2em;
+            line-height: 1;
+        }
+
+        .top-left {
+            top: 5px;
+            left: 5px;
+        }
+
+        .bottom-right {
+            bottom: 5px;
+            right: 5px;
+            transform: rotate(180deg);
+        }
+
+        .card-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2.5em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Card Sorting Game</h1>
+        <p>Arrange the cards in ascending order based on their numbers.</p>
+        <div class="drop-zone" id="dropZone"></div>
+        <div class="message" id="message"></div>
+    </div>
+
+    <script>
+        const dropZone = document.getElementById('dropZone');
+        const message = document.getElementById('message');
+        
+        const suits = ['♣', '♦', '♥', '♠'];
+        const classes = ['clubs', 'diamonds', 'hearts', 'spades'];
+        let numbers = [];
+        
+        while (numbers.length < 4) {
+            let num = Math.floor(Math.random() * 10) + 1; // Changed to generate numbers 1-10
+            if (!numbers.includes(num)) {
+                numbers.push(num);
+            }
+        }
+
+        suits.forEach((suit, index) => {
+            const card = document.createElement('div');
+            card.classList.add('card', classes[index]);
+            card.setAttribute('draggable', 'true');
+            card.dataset.value = numbers[index];
+
+            // Create top-left corner
+            const topLeft = document.createElement('div');
+            topLeft.classList.add('card-corner', 'top-left');
+            topLeft.innerHTML = `${numbers[index]}<br>${suit}`;
+
+            // Create bottom-right corner
+            const bottomRight = document.createElement('div');
+            bottomRight.classList.add('card-corner', 'bottom-right');
+            bottomRight.innerHTML = `${numbers[index]}<br>${suit}`;
+
+            // Create center suit
+            const center = document.createElement('div');
+            center.classList.add('card-center');
+            center.textContent = suit;
+
+            card.appendChild(topLeft);
+            card.appendChild(center);
+            card.appendChild(bottomRight);
+            dropZone.appendChild(card);
+        });
+
+        const cards = document.querySelectorAll('.card');
+
+        cards.forEach(card => {
+            card.addEventListener('dragstart', (e) => {
+                e.target.classList.add('dragging');
+            });
+
+            card.addEventListener('dragend', (e) => {
+                e.target.classList.remove('dragging');
+                checkOrder();
+            });
+        });
+
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            const draggingCard = document.querySelector('.dragging');
+            const afterElement = getDragAfterElement(dropZone, e.clientX);
+            
+            if (afterElement) {
+                dropZone.insertBefore(draggingCard, afterElement);
+            } else {
+                dropZone.appendChild(draggingCard);
+            }
+        });
+
+        function getDragAfterElement(container, x) {
+            const draggableElements = [...container.querySelectorAll('.card:not(.dragging)')];
+            
+            return draggableElements.reduce((closest, child) => {
+                const box = child.getBoundingClientRect();
+                const offset = x - box.right;
+                
+                if (offset < 0 && offset > closest.offset) {
+                    return { offset: offset, element: child };
+                } else {
+                    return closest;
+                }
+            }, { offset: Number.NEGATIVE_INFINITY }).element;
+        }
+
+        function checkOrder() {
+            const currentOrder = Array.from(dropZone.children).map(card => 
+                parseInt(card.dataset.value)
+            );
+
+            const isCorrect = currentOrder.every((value, index) => 
+                index === 0 || value > currentOrder[index - 1]
+            );
+
+            if (isCorrect) {
+                message.textContent = "Correct!";
+                message.classList.add('success');
+            } else {
+                message.textContent = "";
+                message.classList.remove('success');
+            }
+        }
+    </script>
+</body>
+</html>
