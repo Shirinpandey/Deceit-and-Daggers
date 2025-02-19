@@ -5,7 +5,7 @@ const { MongoClient } = require('mongodb');
 
 const app = express();
 const PORT = 3000;
-const uri = "your_mongodb_connection_string"; // Replace with your MongoDB connection string
+const uri = process.env.MONGO_URI; // Replace with your MongoDB connection string
 
 // Enable CORS
 app.use(cors());
@@ -25,10 +25,10 @@ MongoClient.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
     .catch(error => console.error(error));
 
 // Function to shuffle an array (Fisher-Yates shuffle)
-function shuffleArray(array) {
-    for (let i = array.length - 1; i > 0; i--) {
+function shuffleArray(role_array) {
+    for (let i = role_array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
+        [role_array[i], role_array[j]] = [role_array[j], role_array[i]];
     }
 }
 
