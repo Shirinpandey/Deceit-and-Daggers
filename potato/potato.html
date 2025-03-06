@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+        }
+        .game-container {
+            display: flex;
+            justify-content: center;
+            gap: 50px;
+            margin: 20px;
+        }
+        .potato-container {
+            text-align: center;
+        }
+        .potato {
+            position: relative;
+            width: 150px;
+            height: 260px;
+            border-radius: 100px;
+            overflow: hidden;
+            border: 4px solid #a67c52;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .section {
+            position: absolute;
+            width: 100%;
+            height: 33.33%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-bottom: 2px solid #a67c52;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .section:hover {
+            background-color: rgba(255,255,255,0.2);
+        }
+        .section:nth-child(1) { top: 0; }
+        .section:nth-child(2) { top: 33.33%; }
+        .section:nth-child(3) { top: 66.66%; }
+        .section img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #000000;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        #message {
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Mafia Potato Head Game</h1>
+    
+    <div class="game-container">
+        <div class="potato-container">
+            <h2>Your Potato</h2>
+            <div id="player-potato" class="potato">
+                <div class="section" onclick="changePart(0)">
+                    <img id="player-eyes" src="eyes-1.png" alt="Eyes">
+                </div>
+                <div class="section" onclick="changePart(1)">
+                    <img id="player-nose" src="nose-1.png" alt="Nose">
+                </div>
+                <div class="section" onclick="changePart(2)">
+                    <img id="player-mouth" src="mouth-1.png" alt="Mouth">
+                </div>
+            </div>
+        </div>
+
+        <div class="potato-container">
+            <h2>Target Potato</h2>
+            <div id="target-potato" class="potato">
+                <div class="section">
+                    <img id="target-eyes" src="eyes-1.png" alt="Target Eyes">
+                </div>
+                <div class="section">
+                    <img id="target-nose" src="nose-1.png" alt="Target Nose">
+                </div>
+                <div class="section">
+                    <img id="target-mouth" src="mouth-1.png" alt="Target Mouth">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button onclick="resetGame()">New Game</button>
+    <p id="message"></p>
+
+    <script>
+        const eyesImages = ['eyes-1.png', 'eyes-2.png', 'eyes-3.png'];
+        const noseImages = ['nose-1.png', 'nose-2.png', 'nose-3.png'];
+        const mouthImages = ['mouth-1.png', 'mouth-2.png', 'mouth-3.png'];
+
+        let selectedParts = [0, 0, 0];
+        let targetCombination = [0, 0, 0];
+    
+        function generateRandomCombination() {
+            potato_head = [
+                Math.floor(Math.random() * eyesImages.length),
+                Math.floor(Math.random() * noseImages.length),
+                Math.floor(Math.random() * mouthImages.length)
+            ];
+
+            if (potato_head[0] == 0 && potato_head[1]== 0 && potato_head[2] == 0){
+                return generateRandomCombination();
+            }
+            return potato_head;
+
+        }
+    
+        function updatePotato(potatoType, combination) {
+            const eyes = document.getElementById(`${potatoType}-eyes`);
+            const nose = document.getElementById(`${potatoType}-nose`);
+            const mouth = document.getElementById(`${potatoType}-mouth`);
+
+            eyes.src = eyesImages[combination[0]];
+            nose.src = noseImages[combination[1]];
+            mouth.src = mouthImages[combination[2]];
+        }
+    
+        function changePart(sectionIndex) {
+            const imageSets = [eyesImages, noseImages, mouthImages];
+            selectedParts[sectionIndex] = (selectedParts[sectionIndex] + 1) % imageSets[sectionIndex].length;
+            updatePotato("player", selectedParts);
+            checkWin();
+        }
+    
+        function checkWin() {
+            if (selectedParts.every((val, index) => val === targetCombination[index])) {
+                document.getElementById("message").textContent = "Congratulations! You matched the potato!";
+            } else {
+                document.getElementById("message").textContent = "";
+            }
+        }
+    
+        function resetGame() {
+            selectedParts = [0, 0, 0];
+            targetCombination = generateRandomCombination();
+            updatePotato("player", selectedParts);
+            updatePotato("target", targetCombination);
+            document.getElementById("message").textContent = "";
+        }
+    
+        resetGame();
+    </script>
+</body>
+</html>
