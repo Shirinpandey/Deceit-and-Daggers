@@ -3,6 +3,7 @@ const cors = require('cors');
 const path = require('path');
 const { MongoClient } = require('mongodb');
 
+
 const app = express();
 const PORT = 3000;
 const uri = process.env.MONGO_URI;
@@ -15,19 +16,19 @@ let db, playersCollection;
 
 MongoClient.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(client => {
-        db = client.db("gameDB");
-        playersCollection = db.collection("players");
+        db = client.db("deceit-and-daggers");
+        playersCollection = db.collection("characters");
         console.log("Connected to MongoDB");
     })
     .catch(error => console.error(error));
 
 // Endpoint to get assigned players
-app.get('/players', async (req, res) => {
+app.get('/characters', async (req, res) => {
     try {
-        const players = await playersCollection.find().toArray();
-        const assignedPlayers = players.map(player => ({
-            name: player.name,
-            votes: player.votes || 0,
+        const characters = await playersCollection.find().toArray();
+        const assignedPlayers = characters.map(character => ({
+            name: character.name,
+            votes: character.votes,
         }));
         res.json(assignedPlayers);
     } catch (error) {
@@ -60,16 +61,16 @@ app.post('/vote', async (req, res) => {
 // Endpoint to process round results
 app.post('/process-round', async (req, res) => {
     try {
-        const players = await playersCollection.find({ alive: true }).toArray();
+        const characters = await playersCollection.find({ alive: true }).toArray();
         let highestVotes = 0;
         let potentialEliminations = [];
 
-        players.forEach(player => {
-            if (player.votes > highestVotes) {
-                highestVotes = player.votes;
-                potentialEliminations = [player.name];
-            } else if (player.votes === highestVotes) {
-                potentialEliminations.push(player.name);
+        characters.forEach(player => {
+            if (character.votes > highestVotes) {
+                highestVotes = character.votes;
+                potentialEliminations = [character.name];
+            } else if (character.votes === highestVotes) {
+                potentialEliminations.push(character.name);
             }
         });
 

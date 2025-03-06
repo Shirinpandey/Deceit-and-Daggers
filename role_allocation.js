@@ -50,4 +50,3 @@ async function allocateRoles(names, gameKey) {
       }
      }
 
-     allocateRoles(['Sky', 'Arjun', 'Rhea', 'Shirin', 'Bob'], "gamekeyexample8");
