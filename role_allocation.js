@@ -1,52 +1,55 @@
-// const {Character} = require('database.js'); // Import the Character Schema
-import { Character } from './database.js';
+const { Character } = require("./database");
 
 async function allocateRoles(names, gameKey) {
-    let numPlayers = names.length;
-    let role_list = [];
-    let already_assigned = 0;
-    let civilian_no = 0;
-    role_list.push("Medic");
-    if (numPlayers <7) {
-        role_list.push("Mafia");
-        already_assigned = 2;
-    } else {
-        role_list.push("Mafia");
-        role_list.push("Mafia");
-        already_assigned = 3;
-    }
-    
-    civilian_no = numPlayers-already_assigned;
-    let assignedRoles = []
-    
-    for (let i = 0; i < (civilian_no); i++) {
-        role_list.push("Civilian");
-    }
-    for (let i = 0; i < (role_list.length); i++) {
-        let random_index = Math.floor(Math.random()* role_list.length);
-        assignedRoles.push(role_list[random_index]);
-        role_list.splice(random_index, 1);
-    }
+  let numPlayers = names.length;
+  let roleList = [];
+  let alreadyAssigned = 0;
+  let civilianCount = 0;
 
-    // Create player objects with roles
-    const players = names.map((name, index) => ({
-        gameKey,
-        name,
-        role: assignedRoles[index],
-        isAlive: true
-    }));
+  // ✅ Ensure the role list is populated correctly
+  roleList.push("Medic");
 
-    try {
-        const roles = await Character.find(); // Fetch all roles from the database
-        console.log("Roles fetched from MongoDB:", roles);
-     
-     
-         // Save the new character to MongoDB
-         await Character.insertMany(players)
-     
-     
-      } catch (error) {
-        console.error("Error fetching roles:", error);
-      }
-     }
+  if (numPlayers < 7) {
+    roleList.push("Mafia");
+    alreadyAssigned = 2;
+  } else {
+    roleList.push("Mafia");
+    roleList.push("Mafia");
+    alreadyAssigned = 3;
+  }
 
+  civilianCount = numPlayers - alreadyAssigned;
+
+  for (let i = 0; i < civilianCount; i++) {
+    roleList.push("Civilian");
+  }
+
+  let assignedRoles = [];
+
+  // ✅ Ensure each player gets exactly one role
+  for (let i = 0; i < roleList.length; i++) {
+    let randomIndex = Math.floor(Math.random() * roleList.length);
+    assignedRoles.push(roleList[randomIndex]);
+    roleList.splice(randomIndex, 1);
+  }
+
+  // ✅ Ensure players are mapped correctly to roles
+  const players = names.map((name, index) => ({
+    gameKey,
+    name,
+    role: assignedRoles[index] || "Civilian", // ✅ Default to "Civilian" if undefined
+    isAlive: true,
+  }));
+
+  try {
+    // ✅ Check if all roles are correctly assigned before saving
+    console.log("🎭 Assigned Roles:", players);
+
+    await Character.insertMany(players);
+    console.log("✅ Roles successfully assigned!");
+  } catch (error) {
+    console.error("❌ Error assigning roles:", error);
+  }
+}
+
+module.exports = allocateRoles; // ✅ Ensure this is correctly exported
