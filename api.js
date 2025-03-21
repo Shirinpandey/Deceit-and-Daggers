@@ -115,41 +115,196 @@ server.listen(PORT, () => {
 
 const allocateRoles = require("./role_allocation"); // ✅ Corrected
 
+// app.post("/start-game", async (req, res) => {
+//   try {
+//     const { gameKey } = req.body;
+//     if (!gameKey)
+//       return res.status(400).json({ error: "Game key is required" });
+
+//     console.log(`🚀 Starting game for ${gameKey}`);
+
+//     // Fetch players
+//     const players = await Character.find({ gameKey });
+//     if (players.length < 3)
+//       return res.status(400).json({ error: "Not enough players to start" });
+
+//     // ✅ Assign roles
+//     await allocateRoles(
+//       players.map((p) => p.name),
+//       gameKey
+//     );
+
+//     // ✅ Fetch updated player roles
+//     const updatedPlayers = await Character.find({ gameKey });
+
+//     // ✅ Notify players of their roles
+//     io.to(gameKey).emit("gameStarted", { players: updatedPlayers });
+
+//     // ✅ Log before sending phase update
+//     console.log(`🔄 Emitting phase update: MiniGames for game ${gameKey}`);
+
+//     // ✅ Begin first phase: Mini-Games & Kill Selection
+//     io.to(gameKey).emit("phaseUpdate", {
+//       phase: "MiniGames",
+//       players: updatedPlayers,
+//     });
+
+//     res.json({ message: "Game started successfully!" });
+//   } catch (error) {
+//     console.error("❌ Error starting game:", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
+
+// app.post("/start-game", async (req, res) => {
+//   try {
+//     const { gameKey } = req.body;
+//     if (!gameKey)
+//       return res.status(400).json({ error: "Game key is required" });
+
+//     console.log(`🚀 Starting game for ${gameKey}`);
+
+//     // Fetch players
+//     const players = await Character.find({ gameKey });
+//     if (players.length < 3)
+//       return res.status(400).json({ error: "Not enough players to start" });
+
+//     // ✅ Assign roles
+//     await allocateRoles(
+//       players.map((p) => p.name),
+//       gameKey
+//     );
+
+//     // ✅ Fetch updated player roles
+//     const updatedPlayers = await Character.find({ gameKey });
+
+//     // ✅ Notify players of their roles
+//     io.to(gameKey).emit("gameStarted", { players: updatedPlayers });
+
+//     // ✅ Confirm WebSocket Connection
+//     console.log(`📡 Emitting phaseUpdate to game ${gameKey}`);
+
+//     // ✅ Begin first phase: Assigning Mini-Games
+//     io.to(gameKey).emit("phaseUpdate", {
+//       phase: "MiniGames",
+//       players: updatedPlayers,
+//     });
+
+//     console.log(`🕹️ First phase started: MiniGames for game ${gameKey}`);
+
+//     res.json({ message: "Game started successfully!" });
+//   } catch (error) {
+//     console.error("❌ Error starting game:", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
+
+// app.post("/start-game", async (req, res) => {
+//   try {
+//     const { gameKey } = req.body;
+//     if (!gameKey)
+//       return res.status(400).json({ error: "Game key is required" });
+
+//     console.log(`🚀 Starting game for ${gameKey}`);
+
+//     // Fetch players
+//     const players = await Character.find({ gameKey });
+//     if (players.length < 3)
+//       return res.status(400).json({ error: "Not enough players to start" });
+
+//     // ✅ Assign roles
+//     await allocateRoles(
+//       players.map((p) => p.name),
+//       gameKey
+//     );
+
+//     // ✅ Fetch updated player roles
+//     const updatedPlayers = await Character.find({ gameKey });
+
+//     // ✅ Notify players of their roles
+//     io.to(gameKey).emit("gameStarted", { players: updatedPlayers });
+
+//     console.log(`📡 Emitting phaseUpdate to game ${gameKey}`);
+//     io.to(gameKey).emit("phaseUpdate", {
+//       phase: "MiniGames",
+//       players: updatedPlayers,
+//     });
+
+//     console.log(`🕹️ First phase started: MiniGames for game ${gameKey}`);
+
+//     res.json({ message: "Game started successfully!" });
+//   } catch (error) {
+//     console.error("❌ Error starting game:", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
+
+// app.post("/start-game", async (req, res) => {
+//   try {
+//     const { gameKey } = req.body;
+//     if (!gameKey)
+//       return res.status(400).json({ error: "Game key is required" });
+
+//     console.log(`🚀 Starting game for ${gameKey}`);
+
+//     // Fetch players
+//     const players = await Character.find({ gameKey });
+//     if (players.length < 3)
+//       return res.status(400).json({ error: "Not enough players to start" });
+
+//     // ✅ Assign roles
+//     await allocateRoles(
+//       players.map((p) => p.name),
+//       gameKey
+//     );
+
+//     // ✅ Fetch updated player roles
+//     const updatedPlayers = await Character.find({ gameKey });
+
+//     // ✅ Define available mini-games
+//     const miniGames = ["Game1", "Game2", "Game3"];
+
+//     // ✅ Assign a random mini-game to each player
+//     updatedPlayers.forEach(async (player) => {
+//       const assignedGame =
+//         miniGames[Math.floor(Math.random() * miniGames.length)];
+//       await Character.updateOne(
+//         { _id: player._id },
+//         { $set: { assignedGame } }
+//       );
+//     });
+
+//     // ✅ Fetch updated players with assigned mini-games
+//     const finalPlayers = await Character.find({ gameKey });
+
+//     // ✅ Notify players of their roles and mini-games
+//     io.to(gameKey).emit("gameStarted", { players: finalPlayers });
+
+//     console.log(`📡 Emitting phaseUpdate with MiniGames`);
+//     io.to(gameKey).emit("phaseUpdate", {
+//       phase: "MiniGames",
+//       players: finalPlayers,
+//     });
+
+//     console.log(`🕹️ Mini-games assigned for game ${gameKey}`);
+//     res.json({ message: "Game started successfully!" });
+//   } catch (error) {
+//     console.error("❌ Error starting game:", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
+
 app.post("/start-game", async (req, res) => {
   try {
     const { gameKey } = req.body;
     if (!gameKey)
-      return res.status(400).json({ error: "Game key is required" });
+      return res.status(400).json({ error: "Game key is required." });
 
-    console.log(`🚀 Starting game for ${gameKey}`);
+    // ✅ Update the database to indicate the game has started
+    await Game.findOneAndUpdate({ gameKey }, { $set: { gameStarted: true } });
 
-    // Fetch players
-    const players = await Character.find({ gameKey });
-    if (players.length < 3)
-      return res.status(400).json({ error: "Not enough players to start" });
-
-    // ✅ Assign roles
-    await allocateRoles(
-      players.map((p) => p.name),
-      gameKey
-    );
-
-    // ✅ Fetch updated player roles
-    const updatedPlayers = await Character.find({ gameKey });
-
-    // ✅ Notify players of their roles
-    io.to(gameKey).emit("gameStarted", { players: updatedPlayers });
-
-    // ✅ Log before sending phase update
-    console.log(`🔄 Emitting phase update: MiniGames for game ${gameKey}`);
-
-    // ✅ Begin first phase: Mini-Games & Kill Selection
-    io.to(gameKey).emit("phaseUpdate", {
-      phase: "MiniGames",
-      players: updatedPlayers,
-    });
-
-    res.json({ message: "Game started successfully!" });
+    console.log(`🎮 Game started for ${gameKey}`);
+    res.json({ success: true });
   } catch (error) {
     console.error("❌ Error starting game:", error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -222,23 +377,39 @@ app.post("/save-player", async (req, res) => {
   }
 });
 
+// app.get("/games/:gameKey", async (req, res) => {
+//   try {
+//     const { gameKey } = req.params;
+//     const game = await Game.findOne({ gameKey });
+
+//     if (!game) return res.status(404).json({ error: "Game not found" });
+
+//     const players = await Character.find({ gameKey });
+
+//     console.log("📢 Game Data Sent to Frontend:", {
+//       hostName: `"${game.hostName.trim()}"`,
+//       players,
+//     });
+
+//     res.json({
+//       hostName: game.hostName.trim().toLowerCase(), // ✅ Ensure clean & lowercase host name
+//       players,
+//     });
+//   } catch (error) {
+//     console.error("❌ Error fetching game details:", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
+
 app.get("/games/:gameKey", async (req, res) => {
   try {
-    const { gameKey } = req.params;
     const game = await Game.findOne({ gameKey });
-
-    if (!game) return res.status(404).json({ error: "Game not found" });
-
-    const players = await Character.find({ gameKey });
-
-    console.log("📢 Game Data Sent to Frontend:", {
-      hostName: `"${game.hostName.trim()}"`,
-      players,
-    });
+    if (!game) return res.status(404).json({ error: "Game not found." });
 
     res.json({
-      hostName: game.hostName.trim().toLowerCase(), // ✅ Ensure clean & lowercase host name
-      players,
+      hostName: game.hostName,
+      players: await Character.find({ gameKey }),
+      gameStarted: game.gameStarted || false, // ✅ Include gameStarted state
     });
   } catch (error) {
     console.error("❌ Error fetching game details:", error);
@@ -311,3 +482,9 @@ setTimeout(async () => {
     console.error("❌ Error in auto-voting:", error);
   }
 }, 30000); // ⏳ Auto-vote after 30 seconds
+
+// ✅ WebSocket: Notify all players when game starts
+// socket.on("startGame", ({ gameKey }) => {
+//   console.log(`🎮 Game started for ${gameKey}`);
+//   io.to(gameKey).emit("gameStarted"); // ✅ Notify all players to transition
+// });
