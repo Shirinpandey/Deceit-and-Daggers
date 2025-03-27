@@ -8,7 +8,7 @@ const PORT = 3000;
 const uri = process.env.MONGO_URI;
 
 const allowedOrigins = [
-  "https://daggers-and-deceit.vercel.app", // ✅ your Vercel frontend
+  "https://deceit-and-daggers.vercel.app",
   "http://localhost:8000",
 ];
 

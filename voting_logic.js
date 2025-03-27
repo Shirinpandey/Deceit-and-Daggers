@@ -4,10 +4,10 @@ const cors = require("cors");
 
 const app = express();
 const port = 3000;
-const uri = process.env.MONGODB_URI; // Replace with your MongoDB connection string
+const uri = process.env.MONGODB_URI;
 
 const allowedOrigins = [
-  "https://daggers-and-deceit.vercel.app", // ✅ your Vercel frontend
+  "https://deceit-and-daggers.vercel.app",
   "http://localhost:8000",
 ];
 

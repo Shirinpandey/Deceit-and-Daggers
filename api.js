@@ -15,7 +15,7 @@ const io = new Server(server, {
 const PORT = process.env.PORT || 8000;
 
 const allowedOrigins = [
-  "https://daggers-and-deceit.vercel.app", // ✅ your Vercel frontend
+  "https://deceit-and-daggers.vercel.app",
   "http://localhost:8000",
 ];
 
