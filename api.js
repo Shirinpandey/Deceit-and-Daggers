@@ -14,7 +14,19 @@ const io = new Server(server, {
 
 const PORT = process.env.PORT || 8000;
 
-app.use(cors());
+const allowedOrigins = [
+  "https://daggers-and-deceit.vercel.app", // ✅ your Vercel frontend
+  "http://localhost:8000",
+];
+
+app.use(
+  cors({
+    origin: allowedOrigins,
+    methods: ["GET", "POST"],
+    credentials: true,
+  })
+);
+
 app.use(express.json());
 connectDB();
 
