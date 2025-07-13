@@ -1,10 +1,12 @@
-// const mongoose = require("mongoose");
-import mongoose from "mongoose"; 
+require("dotenv").config();
+const mongoose = require("mongoose");
 
+mongoose.set("strictQuery", false);
+console.log("MONGO_URI:", process.env.MONGO_URI);
 
-// Connect to MongoDB
 const connectDB = async () => {
   try {
+    console.log("🌐 Connecting to MongoDB with URI:", process.env.MONGO_URI);
     await mongoose.connect(process.env.MONGO_URI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
@@ -16,21 +18,22 @@ const connectDB = async () => {
   }
 };
 
-
-// Characters Schema
 const CharacterSchema = new mongoose.Schema({
-  gameKey: String,  // Links players to a game
+  gameKey: String,
   name: String,
-  role: { type: String, enum: ["Civilian", "Medic", "Mafia"], required: true },
+  role: {
+    type: String,
+    enum: ["Civilian", "Medic", "Mafia", "Host"],
+    required: true,
+  },
   isAlive: { type: Boolean, default: true },
+  votes: { type: Number, default: 0 },
 });
 
 const Character = mongoose.model("Character", CharacterSchema);
 
-
-// Scores Schema
 const ScoreSchema = new mongoose.Schema({
-  gameKey: String,  // Links scores to a game
+  gameKey: String,
   playerName: String,
   score: { type: Number, default: 0 },
   roundsSurvived: { type: Number, default: 0 },
@@ -39,16 +42,13 @@ const ScoreSchema = new mongoose.Schema({
 
 const Score = mongoose.model("Score", ScoreSchema);
 
-
-// Games Schema
 const GameSchema = new mongoose.Schema({
   gameKey: { type: String, unique: true, required: true },
   hostName: String,
+  gameStarted: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now },
 });
 
 const Game = mongoose.model("Game", GameSchema);
 
-
-// module.exports = { connectDB, Player, Score, Game };
-export { connectDB, Character, Score, Game };
+module.exports = { connectDB, Character, Score, Game };
