@@ -1,8 +1,6 @@
-# Welcome to your Lovable project
+# Welcome to Deceit and Daggers
 
-## Project info
 
-**URL**: https://lovable.dev/projects/0336f70d-6bfd-44df-a16b-e8f35d37775e
 
 ## How can I edit this code?
 
